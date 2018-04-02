@@ -1,0 +1,3 @@
+/home/nvidia/Desktop/Workspace/Test-Sensor/build/CMakeFiles/edit_cache.dir
+/home/nvidia/Desktop/Workspace/Test-Sensor/build/CMakeFiles/rebuild_cache.dir
+/home/nvidia/Desktop/Workspace/Test-Sensor/build/CMakeFiles/testSensor.dir
