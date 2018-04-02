@@ -5,22 +5,13 @@ It is a graduation project.
 - Jetson TX2
 
 ## Requirement
-### Default
 - JetPack3.1
     - L4T 28.1
     - CUDA 8.0
     - cuDNN 6.0
 - cmake
-
-### AdaptiveCruise
-
-### Camera
-
-### CarMove
 - i2c-tools
     - `sudo apt-get install libi2c-dev`
-
-### LaneKeepingAssist
 - tensorflow for TX2
     - http://www.jetsonhacks.com/2017/09/22/install-tensorflow-python-nvidia-jetson-tx-dev-kits/
 - scipy for python
