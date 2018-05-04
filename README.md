@@ -5,6 +5,7 @@
 
 ## Camera
 - LI-IMX377-MIPI-CS
+- LI-JTX1-MIPI_ADPT
 
 ## Model Car
 - Traxxax 1/16 Slash 4X4(Brushed)
