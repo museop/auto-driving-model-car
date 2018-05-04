@@ -1,8 +1,14 @@
-# AutoDrivingAPI
-It is a graduation project.
+# SelfDrivingModelCar
 
-## Hardware
-- Jetson TX2
+## Hardware Platform
+- NVIDIA Jetson TX2
+
+## Camera
+- LI-IMX377-MIPI-CS
+
+## Model Car
+- Traxxax 1/16 Slash 4X4(Brushed)
+- motor: Titan 12T 550
 
 ## Requirement
 - JetPack3.1
@@ -14,6 +20,7 @@ It is a graduation project.
     - `sudo apt-get install libi2c-dev`
 - tensorflow for TX2
     - http://www.jetsonhacks.com/2017/09/22/install-tensorflow-python-nvidia-jetson-tx-dev-kits/
+- keras
 - scipy for python
     - `sudo apt-get install python-scipy`
 - numpy

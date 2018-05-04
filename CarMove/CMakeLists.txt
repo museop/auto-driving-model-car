@@ -4,7 +4,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 include_directories( include )
 
-file( GLOB SOURCES "src/*.cpp" )
+file( GLOB SOURCES "*.cpp" )
 
 add_library(carMove SHARED ${SOURCES})
 
