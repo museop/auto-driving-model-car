@@ -25,8 +25,8 @@ def simulate_driving(args):
         key = cv2.waitKey(10)
 
         if key & 0xFF == ord('q'):
-            break
             cv2.destroyAllWindows()
+            break
 
 
 if __name__ == '__main__':
