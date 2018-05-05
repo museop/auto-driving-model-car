@@ -1,6 +1,6 @@
 import ctypes
 
-lib = ctypes.cdll.LoadLibrary('./libcarMove.so')
+lib = ctypes.cdll.LoadLibrary('/home/nvidia/Workspace/SelfDrivingModelCar/CarMove/libcarMove.so')
 
 class CarMove(object):
     def __init__(self):

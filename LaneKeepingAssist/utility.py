@@ -43,7 +43,7 @@ def steering_angle2pwm_value(steering_angle):
     """
     Converts steering angle(radian) to pwm value.
     """
-    steers_deg = radian2degree(steers)
+    steers_deg = radian2degree(steering_angle)
     return range_map(steers_deg, MIN_DEGREE, MAX_DEGREE, MIN_PWM_VALUE, MAX_PWM_VALUE)
 
 

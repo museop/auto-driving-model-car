@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/Joystick.cpp
+Joystick.h
+/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/Joystick.h
+unistd.h
+-
+
+/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/Joystick.h
+fcntl.h
+-
+stdio.h
+-
+linux/joystick.h
+-
+
+/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/JoystickWrapper.cpp
+Joystick.h
+/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/Joystick.h
+
