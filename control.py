@@ -14,7 +14,7 @@ MOVE_BACK_SPEED = 284
 js = None
 car = None
 steering_model = None
-auto_driving = False
+self_driving_mode = False
 
 def steer(steering_value):
     if steering_value >= 307.0:
@@ -23,10 +23,10 @@ def steer(steering_value):
         car.turnLeft(steering_value)
 
 def self_driving():
-    steering_model.load_model_from('model.h5')
+    steering_model.load_model_from('LaneKeepingAssist/model.h5')
     cap = cv2.VideoCapture("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)320, height=(int)160,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink")
     while True:
-        if auto_driving:
+        if self_driving_mode:
             ret, frame = cap.read()
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             steering_radian = steering_model.predict(frame)
@@ -46,22 +46,24 @@ if __name__ == '__main__':
 
     while js.read_event() == 0:
         event_type = js.get_event_type()
+        # button event
         if event_type == 1:
             btn, btype = js.get_button_event()
             if btn == 0:
                 print('Exit..')
                 break
             elif btn == 3 and btype == "pressed":
-                if auto_driving:
-                    auto_driving = False
-                    car.moveFront(307)
+                if self_driving_mode:
+                    self_driving_mode = False
+                    car.moveFront(NEUTRAL_VALUE)
                 else:
-                    auto_driving = True
-                    car.moveFront(328)
-                print("auto driving: " + str(auto_driving))
-        elif event_type == 2:
+                    self_driving_mode = True
+                    car.moveFront(MOVE_FRONT_SPEED)
+                print("auto driving: " + str(self_driving_mode))
+        # axis event
+        elif event_type == 2 and self_driving_mode == False:
             axis = js.get_axis_state()
-            if auto_driving == False and axis == 0:
+            if axis == 0:
                 x, y = js.get_axis_value(axis)
                 if y < 0:
                     print("move front")
@@ -72,9 +74,9 @@ if __name__ == '__main__':
                 else:
                     print("stop")
                     car.moveFront(NEUTRAL_VALUE)
-            elif auto_driving == False and axis == 1:
+            elif axis == 1:
                 x, y = js.get_axis_value(axis)
-                pwm = range_map(x, -32767, 35767, 235, 379)
+                pwm = range_map(x, -32767, 32767, 235, 379)
                 if pwm >= NEUTRAL_VALUE:
                     car.turnRight(pwm)
                 else:
