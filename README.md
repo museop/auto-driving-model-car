@@ -16,16 +16,19 @@
     - L4T 28.1
     - CUDA 8.0
     - cuDNN 6.0
-- cmake
+- CMake
 - i2c-tools
     - `sudo apt-get install libi2c-dev`
-- tensorflow for TX2
+- TensorFlow for TX2
     - http://www.jetsonhacks.com/2017/09/22/install-tensorflow-python-nvidia-jetson-tx-dev-kits/
-- keras
-- scipy for python
+- H5py
+    - sudo pip install h5py
+- Keras(2.1.5)
+    - sudo pip install keras
+- SciPy for Python
     - `sudo apt-get install python-scipy`
-- numpy
+- NumPy
     - `sudo apt-get install python-numpy`
-- openCV for TX2
+- OpenCV for TX2
     - http://www.jetsonhacks.com/2017/04/05/build-opencv-nvidia-jetson-tx2/
 

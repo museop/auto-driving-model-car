@@ -1,3 +1,4 @@
+import argparse
 import cv2
 import time
 import numpy as np
@@ -8,22 +9,24 @@ from LaneKeepingAssist.steering_model import SteeringModel
 from LaneKeepingAssist.utility import steering_angle2pwm_value, range_map
 
 NEUTRAL_VALUE = 307
-MOVE_FRONT_SPEED = 328
-MOVE_BACK_SPEED = 284
+MOVE_FRONT_SPEED = 330
+MOVE_BACK_SPEED = 285
 
 js = None
 car = None
 steering_model = None
 self_driving_mode = False
+model_path = None
 
 def steer(steering_value):
-    if steering_value >= 307.0:
+    if steering_value >= NEUTRAL_VALUE:
         car.turnRight(steering_value)
     else:
         car.turnLeft(steering_value)
 
+
 def self_driving():
-    steering_model.load_model_from('LaneKeepingAssist/model.h5')
+    steering_model.load_model_from(model_path)
     cap = cv2.VideoCapture("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)320, height=(int)160,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink")
     while True:
         if self_driving_mode:
@@ -35,8 +38,15 @@ def self_driving():
         time.sleep(0.01)
     cap.release()
 
+
 if __name__ == '__main__':
-    js = Joystick("/dev/input/js0")
+    parser = argparse.ArgumentParser(description='Control Driving')
+    parser.add_argument('-m', help='path to model h5 file.',   dest='model',     type=str, default='model.h5')
+    parser.add_argument('-j', help='path to joystick device.', dest='js_device', type=str, default='/dev/input/js0')
+    args = parser.parse_args()
+    
+    model_path = args.model
+    js = Joystick(args.js_device)
     car = CarMove()
     steering_model = SteeringModel()
 
@@ -81,5 +91,6 @@ if __name__ == '__main__':
                     car.turnRight(pwm)
                 else:
                     car.turnLeft(pwm)
+
     car.turnRight(NEUTRAL_VALUE)
     car.stop()
