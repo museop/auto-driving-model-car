@@ -1,3 +1,0 @@
-/home/nvidia/Desktop/Workspace/Autodrving/CarMove/build/CMakeFiles/edit_cache.dir
-/home/nvidia/Desktop/Workspace/Autodrving/CarMove/build/CMakeFiles/rebuild_cache.dir
-/home/nvidia/Desktop/Workspace/Autodrving/CarMove/build/CMakeFiles/carMove.dir

@@ -1,3 +1,0 @@
-/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/CMakeFiles/edit_cache.dir
-/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/CMakeFiles/rebuild_cache.dir
-/home/nvidia/Workspace/Untitled Folder/Test-Joystick/lib/CMakeFiles/Joystick.dir

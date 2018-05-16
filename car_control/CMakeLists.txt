@@ -1,0 +1,7 @@
+cmake_minimum_required( VERSION 3.5.1 )
+project( carMove )
+include_directories( include )
+file( GLOB SOURCES "src/*.cpp" )
+set( CMAKE_BUILD_TYPE Release )
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ".." )
+add_library( carMove SHARED ${SOURCES} )

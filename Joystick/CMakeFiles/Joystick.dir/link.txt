@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -O3 -DNDEBUG  -shared -Wl,-soname,libJoystick.so -o libJoystick.so CMakeFiles/Joystick.dir/Joystick.cpp.o CMakeFiles/Joystick.dir/JoystickWrapper.cpp.o 

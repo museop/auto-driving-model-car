@@ -1,10 +1,13 @@
+import os
 import cv2
 
 QUEUE_SIZE = 20
 THRESHHOLD = 1
 
+DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "Stopsign_HAAR.xml")
+
 class StopSignDetector(object):
-    def __init__(self, cascade_classifier='Stopsign_HAAR.xml'):
+    def __init__(self, cascade_classifier=DEFAULT_HAAR_PATH):
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.stopsign_cascade = cv2.CascadeClassifier(cascade_classifier)
         self.queue = []
@@ -20,7 +23,7 @@ class StopSignDetector(object):
         stop_signs = self.stopsign_cascade.detectMultiScale(gray, minNeighbors=5, minSize=(30, 30))
 
         for (x_pos, y_pos, width, height) in stop_signs:
-            cv2.putText(image, 'Detected Stop Sign', (x_pos-5, y_pos-5), self.font, 0.2, (0, 255, 0), 2)
+            cv2.putText(image, 'Stop!', (x_pos-5, y_pos-5), self.font, 0.5, (0, 0, 255), 2)
             cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), (0, 0, 255), 2)
 
         if len(stop_signs) > 0:

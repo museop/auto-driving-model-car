@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import scipy.misc
+import random
 import os
 from sklearn.model_selection import train_test_split
 
@@ -127,6 +128,92 @@ def random_brightness(image):
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
 
+def random_shadow(image):
+    """
+    Generates and adds random shadow
+    """
+    top_y = 320*np.random.uniform()
+    top_x = 0
+    bot_x = 160
+    bot_y = 320*np.random.uniform()
+    image_hls = cv2.cvtColor(image,cv2.COLOR_RGB2HLS)
+    shadow_mask = 0*image_hls[:,:,1]
+    X_m = np.mgrid[0:image.shape[0],0:image.shape[1]][0]
+    Y_m = np.mgrid[0:image.shape[0],0:image.shape[1]][1]
+    shadow_mask[((X_m-top_x)*(bot_y-top_y) -(bot_x - top_x)*(Y_m-top_y) >=0)]=1
+    #random_bright = .25+.7*np.random.uniform()
+    if np.random.randint(2)==1:
+        random_bright = .5
+        cond1 = shadow_mask==1
+        cond0 = shadow_mask==0
+        if np.random.randint(2)==1:
+            image_hls[:,:,1][cond1] = image_hls[:,:,1][cond1]*random_bright
+        else:
+            image_hls[:,:,1][cond0] = image_hls[:,:,1][cond0]*random_bright    
+    image = cv2.cvtColor(image_hls,cv2.COLOR_HLS2RGB)
+    return image
+
+
+def random_snow(image):
+    """
+    Randomly make snow in the image.
+    """
+    if np.random.rand() < 0.2:
+        image_HLS = cv2.cvtColor(image,cv2.COLOR_RGB2HLS) ## Conversion to HLS
+        image_HLS = np.array(image_HLS, dtype = np.float64) 
+        brightness_coefficient = 2.5 
+        snow_point=random.randint(80, 100)
+        image_HLS[:,:,1][image_HLS[:,:,1]<snow_point] = image_HLS[:,:,1][image_HLS[:,:,1]<snow_point]*brightness_coefficient ## scale pixel values up for channel 1(Lightness)
+        image_HLS[:,:,1][image_HLS[:,:,1]>255]  = 255 ##Sets all values above 255 to 255
+        image_HLS = np.array(image_HLS, dtype = np.uint8)
+        image_RGB = cv2.cvtColor(image_HLS,cv2.COLOR_HLS2RGB) ## Conversion to RGB
+        return image_RGB
+    else:
+        return image
+
+
+def generate_random_lines(imshape,slant,drop_length):
+    """
+    Generate lines.
+    """
+    drops=[]
+    heavy = random.randint(100, 300)
+    for _ in range(heavy): ## If You want heavy rain, try increasing this
+        if slant<0:
+            x= np.random.randint(slant,imshape[1])
+        else:
+            x= np.random.randint(0,imshape[1]-slant)
+        y= np.random.randint(0,imshape[0]-drop_length)
+        drops.append((x,y))
+    return drops
+        
+    
+def random_rain(image):
+    """
+    Randomly make rain in the image.
+    """
+    if np.random.rand() < 0.2:
+        imshape = image.shape
+        slant_extreme=10
+        slant= np.random.randint(-slant_extreme,slant_extreme) 
+        drop_length=1
+        drop_width=1
+        drop_color=(200,200,200) ## a shade of gray
+        rain_drops= generate_random_lines(imshape,slant,drop_length)
+        
+        for rain_drop in rain_drops:
+            cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+drop_length),drop_color,drop_width)
+        image= cv2.blur(image,(3,3)) ## rainy view are blurry
+        
+        brightness_coefficient = 0.7 ## rainy days are usually shady 
+        image_HLS = cv2.cvtColor(image,cv2.COLOR_RGB2HLS) ## Conversion to HLS
+        image_HLS[:,:,1] = image_HLS[:,:,1]*brightness_coefficient ## scale pixel values down for channel 1(Lightness)
+        image_RGB = cv2.cvtColor(image_HLS,cv2.COLOR_HLS2RGB) ## Conversion to RGB
+        return image_RGB
+    else:
+        return image
+
+
 def augument(data_dir, image_file, steering_angle, range_x=100, range_y=10):
     """
     Generate an augumented image and adjust steering angle.
@@ -135,6 +222,9 @@ def augument(data_dir, image_file, steering_angle, range_x=100, range_y=10):
     image = load_image(data_dir, image_file)
     image, steering_angle = random_flip(image, steering_angle)
     image, steering_angle = random_translate(image, steering_angle, range_x, range_y)
+    image = random_snow(image)
+    image = random_rain(image)
+    image = random_shadow(image)
     image = random_brightness(image)
     return image, steering_angle
 

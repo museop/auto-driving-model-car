@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import argparse
 import os
+import time
 from steering_model import SteeringModel
 from utility import load_image, radian2degree
 
@@ -18,6 +19,7 @@ def simulate_driving(args):
     if args.start_index >= num_of_frames:
         print('start index is too large.. (start index: %d, num of frames: %d)' % (start_index, num_of_frames))
     for i in range(args.start_index, num_of_frames, 1):
+        start_time = time.time()
         image = load_image(args.data_dir, lines[i].split()[0])
         steering_radian = steering_model.predict(image)
         steering_degree = radian2degree(steering_radian)
@@ -26,6 +28,12 @@ def simulate_driving(args):
         dst = cv2.warpAffine(wheel_img, M, (cols, rows))
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        fps = 1 / (time.time() - start_time)
+        text = "Steering angle: %f radian.\nFPS: %.02f" % (steering_radian, fps)
+        y0, dy = 30, 30
+        for j, line in enumerate(text.split('\n')):
+            y = y0 + j*dy
+            image = cv2.putText(image, line, (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         cv2.imshow('image', image)
         cv2.imshow("wheel", dst)
 
@@ -34,6 +42,8 @@ def simulate_driving(args):
         if key & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             break
+        elif key & 0xFF == ord('s'):
+            cv2.imwrite(str(i) + '.jpg', image)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Simulate Driving')

@@ -8,9 +8,9 @@ from CarMove.CarMove import CarMove
 from LaneKeepingAssist.steering_model import SteeringModel
 from LaneKeepingAssist.utility import steering_angle2pwm_value, range_map
 
-NEUTRAL_VALUE = 307
+NEUTRAL_VALUE    = 307
 MOVE_FRONT_SPEED = 330
-MOVE_BACK_SPEED = 285
+MOVE_BACK_SPEED  = 285
 
 js = None
 car = None
@@ -20,8 +20,12 @@ model_path = None
 
 def steer(steering_value):
     if steering_value >= NEUTRAL_VALUE:
+        speed = range_map(NEUTRAL_VALUE - steering_value, -72., 0., 326., 330.)
+        car.moveFront(speed)
         car.turnRight(steering_value)
     else:
+        speed = range_map(NEUTRAL_VALUE - steering_value, 0., 72., 280., 285.)
+        car.moveBack(speed)
         car.turnLeft(steering_value)
 
 

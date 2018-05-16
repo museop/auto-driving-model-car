@@ -1,5 +1,0 @@
-cmake_minimum_required( VERSION 3.5.1 )
-project( Joystick )
-set( CMAKE_BUILD_TYPE Release )
-file( GLOB SOURCES "*.cpp" )
-add_library( Joystick SHARED ${SOURCES} )
