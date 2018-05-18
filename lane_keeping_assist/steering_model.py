@@ -5,14 +5,14 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from keras.layers import Lambda, Conv2D, MaxPooling2D, Dropout, Dense, Flatten
 from keras import backend as K
-from utility import INPUT_SHAPE, preprocess, load_data, batch_generator
+from utils import INPUT_SHAPE, preprocess, load_data, batch_generator
 import os
 
 
 class SteeringModel(object):
     def __init__(self):
+        print('init SteeringModel')
         self.model = None
-        
         
     def build_model(self, keep_prob=0.5):
         if self.model != None:
@@ -34,14 +34,12 @@ class SteeringModel(object):
         self.model.add(Dense(1))
         self.model.summary()
         
-        
     def load_model_from(self, model_h5_file):
         if self.model != None:
             del self.model
             K.clear_session()
             
         self.model = load_model(model_h5_file)
-    
     
     def train_model(self, data_dir, learning_rate, batch_size, samples_per_epoch, nb_epoch, test_size):
         x_train, x_valid, y_train, y_valid = load_data(data_dir, test_size)
@@ -67,16 +65,15 @@ class SteeringModel(object):
             callbacks=[checkpoint],
             verbose=1)
     
-    
     def predict(self, image):
         image = preprocess(image)
         image = np.array([image])
         steering_angle = float(self.model.predict(image, batch_size=1))
         return steering_angle
     
-    
     def __del__(self):
         if self.model != None:
             del self.model
-            K.clear_session()  
+            K.clear_session()
+        print('delete SteeringModel')
 

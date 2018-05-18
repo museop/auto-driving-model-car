@@ -1,10 +1,12 @@
+# need to modify
 import argparse
 import cv2
 import time
 import numpy as np
 import threading
-from Joystick.Joystick import Joystick
-from CarMove.CarMove import CarMove
+sys.path.insert(0, os.path.abspath('..'))
+from command_processor.logitech_gamepad_f710 import LogitechGamepadF710
+from vehicle_control.rc_car_control import RCCarControl
 from LaneKeepingAssist.steering_model import SteeringModel
 from LaneKeepingAssist.utility import steering_angle2pwm_value, range_map
 

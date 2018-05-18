@@ -1,10 +1,12 @@
 import os
 import cv2
+import numpy as np
+
 
 QUEUE_SIZE = 20
 THRESHHOLD = 1
 
-DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "Stopsign_HAAR.xml")
+DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "stop_sign.xml")
 
 class StopSignDetector(object):
     def __init__(self, cascade_classifier=DEFAULT_HAAR_PATH):
@@ -14,17 +16,27 @@ class StopSignDetector(object):
         self.num_true_in_queue = 0
         for i in range(QUEUE_SIZE):
             self.queue.append(False)
-
+    
     def detect(self, image):
         """
-        Detect stop signs from the image(BGR image).
+        Detect the stop signs from the image(BGR image).
         """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         stop_signs = self.stopsign_cascade.detectMultiScale(gray, minNeighbors=5, minSize=(30, 30))
-
+        copy = np.copy(image)
+        
         for (x_pos, y_pos, width, height) in stop_signs:
-            cv2.putText(image, 'Stop!', (x_pos-5, y_pos-5), self.font, 0.5, (0, 0, 255), 2)
-            cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), (0, 0, 255), 2)
+            cv2.putText(copy, 'Stop!', (x_pos-5, y_pos-5), self.font, 0.5, (0, 0, 255), 2)
+            cv2.rectangle(copy, (x_pos, y_pos), (x_pos+width, y_pos+height), (0, 0, 255), 2)
+
+        return copy
+
+    def determine_the_status(self, image):
+        """
+        Determine the status from the image(BGR image).
+        """
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        stop_signs = self.stopsign_cascade.detectMultiScale(gray, minNeighbors=5, minSize=(30, 30))
 
         if len(stop_signs) > 0:
             x = self.queue.pop(0)

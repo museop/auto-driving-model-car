@@ -1,5 +1,5 @@
 import cv2
-from camera import Camera
+from camera import ICamera
 from calibration import undistort
 from calibration import load_calibration
 
@@ -7,8 +7,13 @@ from calibration import load_calibration
 CAMERA_WIDTH, CAMERA_HEIGHT = 320, 160
 
 
-class JetsonTX2Camera(Camera):
+class Error(Exception):
+    pass
+
+
+class LI_IMX377_MIPI_M12(ICamera):
     def __init__(self):
+        print('init LI_IMX377_MIPI_M12')
         self.width = CAMERA_WIDTH
         self.height = CAMERA_HEIGHT
         self.cap = None
@@ -19,7 +24,7 @@ class JetsonTX2Camera(Camera):
         self.cap = cv2.VideoCapture("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)%d, height=(int)%d,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink" % (CAMERA_WIDTH, CAMERA_HEIGHT))
 
         if self.is_opened() == False:
-            print("Failed to open camera.")
+            raise Error("Failed to open camera.")
     
     def is_opened(self):
         return self.cap.isOpened()
@@ -27,7 +32,7 @@ class JetsonTX2Camera(Camera):
     def capture_frame(self):
         ret, frame = self.cap.read()
         if ret == False:
-            print("Failed to capture frame.")
+            raise Error("Failed to capture frame.")
         return frame
 
     def calibrate(self, frame):
@@ -49,4 +54,5 @@ class JetsonTX2Camera(Camera):
 
     def __del__(self):
         self.cap.release()
+        print('delete LI_IMX377_MIPI_M12')
 

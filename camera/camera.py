@@ -2,7 +2,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 
 
-class Camera:
+class ICamera:
     __metaclass__ = ABCMeta
 
     @abstractmethod

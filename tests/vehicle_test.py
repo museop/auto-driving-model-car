@@ -5,7 +5,7 @@ import time
 
 if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath('..'))
-    from car_control.rc_car_control import RCCarControl, RADIAN_MID, RADIAN_MIN, RADIAN_MAX
+    from vehicle_control.rc_car_control import RCCarControl, RADIAN_MID, RADIAN_MIN, RADIAN_MAX
 
     print("Test Car move..")
     car = RCCarControl()

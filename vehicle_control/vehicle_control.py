@@ -2,7 +2,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 
 
-class CarControl():
+class IVehicleControl:
     __metaclass__ = ABCMeta
 
     @abstractmethod

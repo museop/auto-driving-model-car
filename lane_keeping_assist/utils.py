@@ -5,7 +5,6 @@ import random
 import os
 from sklearn.model_selection import train_test_split
 
-MIN_PWM_VALUE, MAX_PWM_VALUE, MIN_DEGREE, MAX_DEGREE = 234.0, 380.0, -40.0, 40.0
 
 IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 66, 200, 3
 INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
@@ -30,23 +29,6 @@ def radian2degree(radian):
     Converts radian to degree
     """
     return radian * 180.0 / scipy.pi
-
-
-def pwm_value2steering_angle(pwm_value):
-    """
-    Converts pwm value to steering angle(radian).
-    """
-    steers_deg = range_map(pwm_value, MIN_PWM_VALUE, MAX_PWM_VALUE, MIN_DEGREE, MAX_DEGREE)
-    return degree2radian(steers_deg)
-
-
-def steering_angle2pwm_value(steering_angle):
-    """
-    Converts steering angle(radian) to pwm value.
-    """
-    steers_deg = radian2degree(steering_angle)
-    return range_map(steers_deg, MIN_DEGREE, MAX_DEGREE, MIN_PWM_VALUE, MAX_PWM_VALUE)
-
 
 
 def load_image(data_dir, image_file):
@@ -83,14 +65,6 @@ def preprocess(image):
     """
     image = reshape(image)
     image = rgb2yuv(image)
-    return image
-
-
-def preprocess2(image):
-    """
-    """
-    image = reshape(image)
-    image = bgr2yuv(image)
     return image
 
 
@@ -263,7 +237,7 @@ def load_data(data_dir, test_size):
     with open(os.path.join(data_dir, 'data.txt')) as f:
         for line in f:
             xs.append(line.split()[0])
-            ys.append(pwm_value2steering_angle(float(line.split()[1])))
+            ys.append(float(line.split()[1]))
 
     x_train, x_valid, y_train, y_valid = train_test_split(xs, ys, test_size=test_size, random_state=0)
 

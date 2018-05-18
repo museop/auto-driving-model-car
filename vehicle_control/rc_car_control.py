@@ -1,7 +1,7 @@
 import sys
 import ctypes
 import os
-from car_control import CarControl
+from vehicle_control import IVehicleControl
 
 
 RADIAN_MIN, RADIAN_MID, RADIAN_MAX = -0.3491, 0., 0.3491
@@ -14,8 +14,9 @@ def convert_radian_to_pwm(radian):
     return (radian + 0.3491) * 144. / 0.6982 + 235.  # (radian - radian min) * (pwm max - pwm min) / (radian max - radian min) + pwm min
 
 
-class RCCarControl(CarControl):
+class RCCarControl(IVehicleControl):
     def __init__(self):
+        print('init RCCarControl')
         lib.CarMove_new.restype = ctypes.c_void_p
 
         lib.CarMove_setSpeed.argtypes = [ctypes.c_void_p, ctypes.c_double]
@@ -65,6 +66,9 @@ class RCCarControl(CarControl):
 
     def stop(self):
         lib.CarMove_stop(self.obj)
+    
+    def __del__(self):
+        print('delete RCCarControl')
 
 
 
