@@ -14,7 +14,7 @@ from traffic_signal_detector.traffic_signal_detector import TrafficSignalDetecto
 EPS = 0.00001
 MAX_SPEED = 10
 MIN_SPEED = 0
-MIN_FRONT_PWM = 325
+MIN_FRONT_PWM = 326
 MAX_BACK_PWM = 289
 MID_PWM = 307
 MIN_RADIAN = -0.3491
@@ -22,6 +22,7 @@ MIN_RADIAN = -0.3491
 lock = threading.Lock()
 car = RCCarControl()
 car_speed = 1
+
 
 class AutoDriver(threading.Thread):
     def __init__(self):
@@ -46,12 +47,11 @@ class AutoDriver(threading.Thread):
         while self.play:
             if self.authority_to_drive:
                 front_frame = front_camera.capture_frame()
-                #  front_frame = front_camera.calibrate(front_frame)
-                steering_angle = lane_keeping_assist.predict_angle(front_frame)
-                steering_angle = steering_angle / 2
-                adjusted_speed = range_map(-abs(steering_angle), MIN_RADIAN, 0.0, 0.0, car_speed+EPS)
                 front_frame = front_camera.calibrate(front_frame)
+                steering_angle = lane_keeping_assist.predict_angle(front_frame)
+                adjusted_speed = range_map(-abs(steering_angle), MIN_RADIAN, 0.0, 0.0, car_speed+EPS)
                 can_go = traffic_signal_detector.can_go_forward(front_frame)
+                print(can_go)
                 lock.acquire()
                 car.steer_wheel(steering_angle)
                 if can_go:
@@ -67,6 +67,7 @@ class AutoDriver(threading.Thread):
     
     def __del__(self):
         print('delete AutoDriver')
+
 
 class AutoDrivingManager(IAutoDriving):
     def __init__(self):
