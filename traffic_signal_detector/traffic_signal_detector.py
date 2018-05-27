@@ -1,6 +1,23 @@
-from traffic_signal_detect import ITrafficSignalDetect
+from abc import ABCMeta
+from abc import abstractmethod
 from stop_sign_detector import StopSignDetector
 from traffic_light_detector import TrafficLightDetector
+
+
+class ITrafficSignalDetect:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def detect_stop_signs(self, front_frame):
+        raise NotImplementedError
+
+    @abstractmethod
+    def detect_traffic_lights(self, front_frame):
+        raise NotImplementedError
+
+    @abstractmethod
+    def can_go_forward(self, front_frame):
+        raise NotImplementedError
 
 
 class TrafficSignalDetector(ITrafficSignalDetect):

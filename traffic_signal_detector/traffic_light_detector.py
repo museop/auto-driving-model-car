@@ -12,13 +12,14 @@ YELLOW_MAX = np.array([40, 255, 255])
 GREEN_MIN = np.array([50, 100, 50])
 GREEN_MAX = np.array([80, 255, 255])
 
-QUEUE_SIZE = 20
+QUEUE_SIZE = 30
 
 UNKNOWN, RED, YELLOW, GREEN = 0, 1, 2, 3
 COLORS_NAME = ["unknown", "red", "yellow", "green"]
 COLORS = [(0, 0, 0), (0, 0, 255), (0, 255, 255), (0, 255, 0)]
 
 DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "traffic_light.xml")
+
 
 def argmax(a_list):
     len_list = len(a_list)
@@ -34,7 +35,7 @@ def argmax(a_list):
 class TrafficLightDetector(object):
     def __init__(self, cascade_classifier=DEFAULT_HAAR_PATH):
         self.traffic_cascade = cv2.CascadeClassifier(cascade_classifier)
-        self.lights_in_queue = [QUEUE_SIZE, 0, 0, 0]
+        self.lights_in_queue = [QUEUE_SIZE, 0, 0, 0] # unknown, red, green, blue
         self.queue = []
         for i in range(QUEUE_SIZE):
             self.queue.append(UNKNOWN)
@@ -43,34 +44,35 @@ class TrafficLightDetector(object):
         """
         Detect a traffic light from the image(BGR image).
         """
-        copy = np.copy(image)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        traffic_light = self.traffic_cascade.detectMultiScale(gray, minNeighbors=5)
+        traffic_light = self.traffic_cascade.detectMultiScale(gray)
 
+        detections = []
         for (x_pos, y_pos, width, height) in traffic_light:
             mid_x1 = x_pos + int(width / 6)
             mid_x2 = x_pos + int(width * 5 / 6)
-            mid_y1 = y_pos + int(height / 5)
-            mid_y2 = y_pos + int(height * 4 / 5)
-            color_id = self.classify_light(copy[mid_y1:mid_y2, mid_x1:mid_x2])
-            cv2.putText(copy, COLORS_NAME[color_id], (x_pos-5, y_pos-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[color_id], 2)
-            cv2.rectangle(copy, (x_pos, y_pos), (x_pos+width, y_pos+height), COLORS[color_id], 2)
+            mid_y1 = y_pos + int(height / 3)
+            mid_y2 = y_pos + int(height * 2 / 3)
+            color_id = self.classify_light(image[mid_y1:mid_y2, mid_x1:mid_x2])
+            cv2.putText(image, COLORS_NAME[color_id], (x_pos-5, y_pos-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[color_id], 2)
+            cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), COLORS[color_id], 2)
+            detections.append((x_pos, y_pos, width, height, COLORS_NAME[color_id]))
 
-        return copy
+        return detections
 
     def determine_the_status(self, image):
         """
         Determine the status of the traffic lights from the image(BGR image).
         """
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        traffic_light = self.traffic_cascade.detectMultiScale(gray, minNeighbors=5)
+        traffic_light = self.traffic_cascade.detectMultiScale(gray)
 
         cnt = [0, 0, 0, 0]
         for (x_pos, y_pos, width, height) in traffic_light:
             mid_x1 = x_pos + int(width / 6)
             mid_x2 = x_pos + int(width * 5 / 6)
-            mid_y1 = y_pos + int(height / 5)
-            mid_y2 = y_pos + int(height * 4 / 5)
+            mid_y1 = y_pos + int(height / 3)
+            mid_y2 = y_pos + int(height * 2 / 3)
             color_id = self.classify_light(image[mid_y1:mid_y2, mid_x1:mid_x2])
             #cv2.putText(image, COLORS_NAME[color_id], (x_pos-5, y_pos-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[color_id], 2)
             #cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), COLORS[color_id], 2)
@@ -90,7 +92,7 @@ class TrafficLightDetector(object):
         return COLORS_NAME[UNKNOWN]
 
     def classify_light(self, image):
-        #cv2.imshow('sdf', image)
+        #cv2.imshow('test', image)
 
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -110,16 +112,3 @@ class TrafficLightDetector(object):
         if green_cnt > red_cnt and green_cnt > yellow_cnt:
             return GREEN
         return UNKNOWN
-
-
-if __name__ == '__main__':
-    detector = TrafficLightDetector()
-    cap = cv2.VideoCapture("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)%d, height=(int)%d,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink" % (640, 320))
-    while cv2.waitKey(10) != ord('q'):
-        ret, frame = cap.read()
-        color = detector.detect(frame)
-        cv2.imshow('frame', frame)
-        print(color)
-
-    cv2.destroyAllWindows()
-    cap.release()
