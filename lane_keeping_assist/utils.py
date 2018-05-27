@@ -33,16 +33,19 @@ def radian2degree(radian):
 
 def load_image(data_dir, image_file):
     """
-    Load RGB images from a file
+    Load images from a file
     """
-    return scipy.misc.imread(os.path.join(data_dir, image_file.strip()))
+    if np.random.rand() < 0.5:
+        return scipy.misc.imread(os.path.join(data_dir, image_file.strip())) # RGB
+    else:
+        return cv2.imread(os.path.join(data_dir, image_file.strip())) # BGR
 
 
 def reshape(image):
     """
     Reshape the image to the input shape used by the network model
     """
-    return scipy.misc.imresize(image[-100:], [IMAGE_HEIGHT, IMAGE_WIDTH])
+    return scipy.misc.imresize(image[-70:], [IMAGE_HEIGHT, IMAGE_WIDTH])
 
 
 def rgb2yuv(image):
@@ -90,16 +93,20 @@ def random_translate(image, steering_angle, range_x, range_y):
     image = cv2.warpAffine(image, trans_m, (width, height))
     return image, steering_angle
 
-
+    
 def random_brightness(image):
     """
     Randomly adjust brightness of the image.
     """
-    # HSV (Hue, Saturation, Value) is also called HSB ('B' for Brightness).
-    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    ratio = 1.0 + 0.4 * (np.random.rand() - 0.5)
-    hsv[:,:,2] =  hsv[:,:,2] * ratio
-    return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    image_HLS = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)  ## Conversion to HLS
+    image_HLS = np.array(image_HLS, dtype=np.float64)
+    random_brightness_coefficient = np.random.uniform() + 0.5  ## generates value between 0.5 and 1.5
+    image_HLS[:, :, 1] = image_HLS[:, :,
+                         1] * random_brightness_coefficient  ## scale pixel values up or down for channel 1(Lightness)
+    image_HLS[:, :, 1][image_HLS[:, :, 1] > 255] = 255  ##Sets all values above 255 to 255
+    image_HLS = np.array(image_HLS, dtype=np.uint8)
+    image_RGB = cv2.cvtColor(image_HLS, cv2.COLOR_HLS2RGB)  ## Conversion to RGB
+    return image_RGB
 
 
 def random_shadow(image):
@@ -148,11 +155,11 @@ def random_snow(image):
 
 def generate_random_lines(imshape,slant,drop_length):
     """
-    Generate lines.
+    Generate lines randomly.
     """
     drops=[]
-    heavy = random.randint(100, 300)
-    for _ in range(heavy): ## If You want heavy rain, try increasing this
+    heavy = random.randint(100, 300) ## If You want heavy rain, try increasing this
+    for _ in range(heavy): 
         if slant<0:
             x= np.random.randint(slant,imshape[1])
         else:
