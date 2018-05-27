@@ -1,10 +1,23 @@
 import os
 import cv2
+from abc import ABCMeta
+from abc import abstractmethod
 from steering_model import SteeringModel
-from lane_keeping_interface import ILaneKeeping
 
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.h5")
+class ILaneKeeping:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def setup_frame_color_space(self, color_space):
+        raise NotImplementError
+
+    @abstractmethod
+    def predict_angle(self, front_frame):
+        raise NotImplementError
+
+
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "steering_model-010.h5")
 
 
 class LaneKeeping(ILaneKeeping):

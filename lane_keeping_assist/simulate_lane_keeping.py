@@ -28,11 +28,11 @@ def simulate_driving(args):
         steering_radian = lane_keeping_assist.predict_angle(image)
         steering_degree = radian2degree(steering_radian)
 
-        M = cv2.getRotationMatrix2D((cols/2, rows/2), -2*steering_degree, 1)
+        M = cv2.getRotationMatrix2D((cols/2, rows/2), -4*steering_degree, 1)
         dst = cv2.warpAffine(wheel_img, M, (cols, rows))
 
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        #image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
         fps = 1 / (time.time() - start_time)
         text = "Steering angle: %f radian.\nFPS: %.02f" % (steering_radian, fps)
@@ -50,6 +50,7 @@ def simulate_driving(args):
             break
         elif key & 0xFF == ord('s'):
             cv2.imwrite(str(i) + '.jpg', image)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Simulate Driving')

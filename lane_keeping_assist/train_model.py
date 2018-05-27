@@ -22,10 +22,10 @@ if __name__ == '__main__':
     print('-' * 30)
     
     steering_model = SteeringModel()
-    if args.previous_model == 'none':
+    if args.model_trained == 'none':
         steering_model.build_model( args.keep_prob )
     else:
-        steering_model.load_model_from( args.previous_model )
+        steering_model.load_model_from( args.model_trained )
 
     steering_model.train_model( args.data_dir,
                                 args.learning_rate,
