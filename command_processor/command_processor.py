@@ -16,6 +16,7 @@ CAR_SPEED_DOWN = 5
 MOVE_CONTROL = 0
 STEERING_CONTROL = 1
 
+
 def convert_axis_value_to_radian(axis_value):
     # (axis value - axis min) * (radian max - radian min) / (axis max - axis min) + radian min
     # This function is dependent to steering angle range of car
@@ -69,7 +70,3 @@ class CommandProcessor(object):
     def __del__(self):
         print('delete CommandProcessor')
         
-if __name__ == '__main__':
-    cp = CommandProcessor()
-    cp.run()
-
