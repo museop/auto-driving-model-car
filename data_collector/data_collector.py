@@ -18,12 +18,14 @@ CAR_SPEED_DOWN = 5
 MOVE_CONTROL = 0
 STEERING_CONTROL = 1
 
-SEC_WRITE_INTERVAL = 0.03
+SEC_WRITE_INTERVAL = 0.02
+
 
 def convert_axis_value_to_radian(axis_value):
     # (axis value - axis min) * (radian max - radian min) / (axis max - axis min) + radian min
     # This function is dependent to steering angle range of car
     return (axis_value + 32767) * 0.6982 / 65534 - 0.3491 
+
 
 class DataWriter(threading.Thread):
     def __init__(self, data_dir='data'):
