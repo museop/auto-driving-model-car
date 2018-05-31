@@ -2,6 +2,7 @@ import threading
 import sys
 import os
 import time
+import datetime
 sys.path.insert(0, os.path.abspath('..'))
 from camera.jetson_tx2_camera import LI_IMX377_MIPI_M12
 from command_processor.logitech_gamepad_f710 import LogitechGamepadF710
@@ -56,10 +57,12 @@ class DataWriter(threading.Thread):
             if self._record:
                 frame = camera.capture_frame()
                 frame = camera.calibrate(frame)
-                filename = str(time.time()) + '.jpg'
+                filename = str(datetime.datetime.now())
+                filename = filename.replace(' ', '-')
+                filename = filename + '.jpg'
                 data_file.write(filename + ' %f\n' % self.current_steering_angle)
                 camera.save_frame(self._data_dir, filename, frame)
-                print(str(time.time()) + ": " + str(self.current_steering_angle))
+                print(filename, str(self.current_steering_angle))
             time.sleep(SEC_WRITE_INTERVAL)
         data_file.close()
     
