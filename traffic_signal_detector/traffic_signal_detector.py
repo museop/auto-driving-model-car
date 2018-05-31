@@ -45,5 +45,18 @@ class TrafficSignalDetector(ITrafficSignalDetect):
             return False
 
         return True
+    
+    def detect(self, front_frame):
+        is_there_a_stop_sign = self.stop_sign_detector.determine_the_status(front_frame)
+        if is_there_a_stop_sign:
+            return False, "Stop Sign"
+
+        color_of_traffic = self.traffic_light_detector.determine_the_status(front_frame)
+        if color_of_traffic == "red" or color_of_traffic == "yellow":
+            return False, color_of_traffic
+        elif color_of_traffic == "green":
+            return True, color_of_traffic
+
+        return True, "unknown"
 
         
