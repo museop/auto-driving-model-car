@@ -1,4 +1,6 @@
 import os
+import time
+import numpy as np
 import cv2
 from abc import ABCMeta
 from abc import abstractmethod
@@ -14,6 +16,10 @@ class ILaneKeeping:
 
     @abstractmethod
     def predict_angle(self, front_frame):
+        raise NotImplementError
+
+    @abstractmethod
+    def avg_processing_time(self, frame_height, frame_width):
         raise NotImplementError
 
 
@@ -49,6 +55,27 @@ class LaneKeeping(ILaneKeeping):
             front_frame = cv2.cvtColor(front_frame, cv2.COLOR_BGR2RGB)
         steering_angle = self.steering_model.predict(front_frame)
         return steering_angle
+
+    def avg_processing_time(self, frame_height, frame_width):
+	img = np.ones((frame_height,frame_width,3), np.uint8) * 255
+        self.predict_angle(img) # The initial detecting time is excluded.
+
+        h, w = img.shape[:2]
+
+        colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 0, 0), (255, 255, 255)]
+        num_iterations = len(colors)
+
+        sum_time = 0.0
+        for i in range(num_iterations):
+            for y in range(h):
+                for x in range(w):
+                    img[y][x] = colors[i]
+            start_time = time.time()
+            self.predict_angle(img)
+            sum_time = sum_time + (time.time() - start_time)
+
+        avg_time = sum_time/num_iterations
+        return avg_time
     
     def __del__(self):
         print('delete LaneKeeping')

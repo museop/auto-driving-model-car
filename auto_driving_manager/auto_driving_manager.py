@@ -1,5 +1,7 @@
 import os
+import numpy as np
 import sys
+import cv2
 import threading
 import time
 from auto_driving import IAutoDriving
@@ -8,7 +10,8 @@ from camera.jetson_tx2_camera import LI_IMX377_MIPI_M12
 from vehicle_control.rc_car_control import RCCarControl
 from lane_keeping_assist.lane_keeping import LaneKeeping
 from lane_keeping_assist.utils import range_map
-from traffic_signal_detector.traffic_signal_detector import TrafficSignalDetector
+from traffic_signal_detector.traffic_signal_detector_using_haar_classifier import TrafficSignalDetectorUsingHAARClassifier
+from traffic_signal_detector.traffic_signal_detector_using_darknet import TrafficSignalDetectorUsingDarknet
 
 
 EPS = 0.00001
@@ -40,28 +43,53 @@ class AutoDriver(threading.Thread):
     def run(self):
         lane_keeping_assist = LaneKeeping()
         lane_keeping_assist.setup_frame_color_space("bgr")
-        traffic_signal_detector = TrafficSignalDetector()
-        
+
+        #  traffic_signal_detector = TrafficSignalDetectorUsingHAARClassifier()
+        traffic_signal_detector = TrafficSignalDetectorUsingDarknet()
+
         front_camera = LI_IMX377_MIPI_M12()
-            
+
+        frame = front_camera.capture_frame()
+        height = np.size(frame, 0)
+        width = np.size(frame, 1)
+        print('height=%d, width=%d' % (height, width))
+        print('avg processing time of lane keeping assist: %f' % lane_keeping_assist.avg_processing_time(height, width))
+        print('avg processing time of traffic signal detector: %f' % traffic_signal_detector.avg_processing_time(height, width))
+
+        f = open('data/data.txt', 'a')
         while self.play:
             if self.authority_to_drive:
-                front_frame = front_camera.capture_frame()
-                front_frame = front_camera.calibrate(front_frame)
-                steering_angle = lane_keeping_assist.predict_angle(front_frame)
-                adjusted_speed = range_map(-abs(steering_angle), MIN_RADIAN, 0.0, 0.0, car_speed+EPS)
-                can_go = traffic_signal_detector.can_go_forward(front_frame)
-                print(can_go)
                 lock.acquire()
-                car.steer_wheel(steering_angle)
-                if can_go:
-                    car.move_front(MIN_FRONT_PWM + adjusted_speed)
-                else:
-                    car.move_front(MID_PWM)
+                start_time = time.time()
+
+                frame = front_camera.capture_frame()
+                frame = front_camera.calibrate(frame)
+
+                steering_angle = lane_keeping_assist.predict_angle(frame)
+                adjusted_speed = range_map(-abs(steering_angle),MIN_RADIAN,0.0,0.0,car_speed+EPS)
+
+                can_go = traffic_signal_detector.can_go_forward(frame, .0)
+
+                #  if can_go:
+                    #  car.steer_wheel(steering_angle)
+                    #  car.move_front(MIN_FRONT_PWM+adjusted_speed) # or  car.move_front(car_speed)
+                #  else:
+                    #  car.move_front(MID_PWM)
+                print(can_go)
+
+                #  fps = 1/(time.time()-start_time)
+                #  print('FPS:', fps)
+
+                #  print(can_go, steering_angle)
+                #  filename = 'data/' + str(start_time) + '.jpg'
+                #  cv2.imwrite(filename, frame)
+                #  f.write(filename+' '+str(fps)+' '+str(steering_angle)+'\n')
+
                 lock.release()
             else:
                 time.sleep(0.5)
-        
+        f.close()
+
     def stop(self):
         self.play = False
     
@@ -78,19 +106,20 @@ class AutoDrivingManager(IAutoDriving):
         self.auto_driver.start()
         
     def auto_driving_mode(self, mode):
-        if self.authority_to_drive:
-            if mode == True:
-                self.auto_driver.grant_authority_to_drive()
-                time.sleep(0.5)
-                lock.acquire()
-                car.move_front(MIN_FRONT_PWM + car_speed)
-                lock.release()
-            else:
-                self.auto_driver.take_away_authority_to_drive()
-                time.sleep(0.5)
-                lock.acquire()
-                car.move_front(MID_PWM)
-                lock.release()
+        if mode == True:
+            self.authority_to_drive = False
+            self.auto_driver.grant_authority_to_drive()
+            time.sleep(0.5)
+            lock.acquire()
+            car.move_front(MIN_FRONT_PWM + car_speed)
+            lock.release()
+        else:
+            self.auto_driver.take_away_authority_to_drive()
+            self.authority_to_drive = True
+            time.sleep(0.5)
+            lock.acquire()
+            car.move_front(MID_PWM)
+            lock.release()
         print("auto_driving_mode: " + str(mode))
 
     def speed_up(self, value):
