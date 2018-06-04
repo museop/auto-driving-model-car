@@ -1,1 +1,5 @@
 *.pyc
+data/
+speed_up_the_jetson.sh
+capture.py
+read_data.py

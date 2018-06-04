@@ -1,9 +1,10 @@
 import os
 import sys
 import enum
+import time
 from logitech_gamepad_f710 import LogitechGamepadF710
 from logitech_gamepad_f710 import JS_BUTTON_EVENT, JS_AXIS_EVENT, JS_BUTTON_PRESSED
-sys.path.insert(0, os.path.abspath('..'))
+#  sys.path.insert(0, os.path.abspath('..'))
 from auto_driving_manager.auto_driving_manager import AutoDrivingManager
 
 
@@ -28,6 +29,7 @@ class CommandProcessor(object):
         super(CommandProcessor, self).__init__()
         print('init CommandProcessor')
         self.adm = AutoDrivingManager()
+        self.auto_mode = False
     
     def run(self):
         js = LogitechGamepadF710()
@@ -44,12 +46,16 @@ class CommandProcessor(object):
                 axis = js.get_axis_state()
                 x, y = js.get_axis_value(axis)
                 self.process_axis_event(axis, x, y)
+            if self.auto_mode == True:
+                time.sleep(0.2)
 
     def process_button_event(self, btn_number):
         if btn_number == AUTO_DRIVING_ON:
             self.adm.auto_driving_mode(True)
+            self.auto_mode = True
         elif btn_number == AUTO_DRIVING_OFF:
             self.adm.auto_driving_mode(False)
+            self.auto_mode = False
         elif btn_number == CAR_SPEED_UP:
             self.adm.speed_up(1)
         elif btn_number == CAR_SPEED_DOWN:
