@@ -35,10 +35,12 @@ def load_image(data_dir, image_file):
     """
     Load images from a file
     """
-    if np.random.rand() < 0.5:
-        return scipy.misc.imread(os.path.join(data_dir, image_file.strip())) # RGB
-    else:
-        return cv2.imread(os.path.join(data_dir, image_file.strip())) # BGR
+    return scipy.misc.imread(os.path.join(data_dir, image_file.strip())) # RGB
+    ## for training
+    #  if np.random.rand() < 0.5:
+        #  return scipy.misc.imread(os.path.join(data_dir, image_file.strip())) # RGB
+    #  else:
+        #  return cv2.imread(os.path.join(data_dir, image_file.strip())) # BGR
 
 
 def reshape(image):
@@ -221,7 +223,7 @@ def batch_generator(data_dir, image_paths, steering_angles, batch_size, is_train
         for index in np.random.permutation(len(image_paths)):
             image_path = image_paths[index]
             steering_angle = steering_angles[index]
-            # argumentation
+            # augumentation
             if is_training and np.random.rand() < 0.6:
                 image, steering_angle = augument(data_dir, image_path, steering_angle)
             else:
