@@ -1,0 +1,6 @@
+classes= 4
+train = /home/nvidia/Workspace/SelfDrivingModelCar/traffic_signal_detector/resources/train.txt
+valid = /home/nvidia/Workspace/SelfDrivingModelCar/traffic_signal_detector/resources/train.txt
+names = /home/nvidia/Workspace/SelfDrivingModelCar/traffic_signal_detector/resources/obj.names
+backup = /home/nvidia/Workspace/SelfDrivingModelCar/traffic_signal_detector/backup/
+

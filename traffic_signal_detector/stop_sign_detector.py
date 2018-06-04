@@ -6,7 +6,7 @@ import numpy as np
 QUEUE_SIZE = 30
 THRESHHOLD = 1
 
-DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "stop_sign.xml")
+DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "resources", "stop_sign.xml")
 
 
 class StopSignDetector(object):
@@ -27,8 +27,8 @@ class StopSignDetector(object):
         
         detections = []
         for (x_pos, y_pos, width, height) in stop_signs:
-            cv2.putText(image, 'Stop!', (x_pos-5, y_pos-5), self.font, 0.5, (0, 0, 255), 2)
-            cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), (0, 0, 255), 2)
+            #cv2.putText(image, 'Stop!', (x_pos-5, y_pos-5), self.font, 0.5, (0, 0, 255), 2)
+            #cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), (0, 0, 255), 2)
             detections.append((x_pos, y_pos, width, height))
 
         return detections

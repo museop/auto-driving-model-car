@@ -18,7 +18,7 @@ UNKNOWN, RED, YELLOW, GREEN = 0, 1, 2, 3
 COLORS_NAME = ["unknown", "red", "yellow", "green"]
 COLORS = [(0, 0, 0), (0, 0, 255), (0, 255, 255), (0, 255, 0)]
 
-DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "traffic_light.xml")
+DEFAULT_HAAR_PATH = os.path.join(os.path.dirname(__file__), "resources", "traffic_light.xml")
 
 
 def argmax(a_list):
@@ -54,8 +54,8 @@ class TrafficLightDetector(object):
             mid_y1 = y_pos + int(height / 3)
             mid_y2 = y_pos + int(height * 2 / 3)
             color_id = self.classify_light(image[mid_y1:mid_y2, mid_x1:mid_x2])
-            cv2.putText(image, COLORS_NAME[color_id], (x_pos-5, y_pos-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[color_id], 2)
-            cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), COLORS[color_id], 2)
+            #cv2.putText(image, COLORS_NAME[color_id], (x_pos-5, y_pos-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[color_id], 2)
+            #cv2.rectangle(image, (x_pos, y_pos), (x_pos+width, y_pos+height), COLORS[color_id], 2)
             detections.append((x_pos, y_pos, width, height, COLORS_NAME[color_id]))
 
         return detections
