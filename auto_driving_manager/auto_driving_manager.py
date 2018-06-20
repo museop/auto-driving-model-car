@@ -56,7 +56,6 @@ class AutoDriver(threading.Thread):
         print('avg processing time of lane keeping assist: %f' % lane_keeping_assist.avg_processing_time(height, width))
         print('avg processing time of traffic signal detector: %f' % traffic_signal_detector.avg_processing_time(height, width))
 
-        f = open('data/data.txt', 'a')
         while self.play:
             if self.authority_to_drive:
                 lock.acquire()
@@ -70,25 +69,15 @@ class AutoDriver(threading.Thread):
 
                 can_go = traffic_signal_detector.can_go_forward(frame, .0)
 
-                #  if can_go:
-                    #  car.steer_wheel(steering_angle)
-                    #  car.move_front(MIN_FRONT_PWM+adjusted_speed) # or  car.move_front(car_speed)
-                #  else:
-                    #  car.move_front(MID_PWM)
-                print(can_go)
-
-                #  fps = 1/(time.time()-start_time)
-                #  print('FPS:', fps)
-
-                #  print(can_go, steering_angle)
-                #  filename = 'data/' + str(start_time) + '.jpg'
-                #  cv2.imwrite(filename, frame)
-                #  f.write(filename+' '+str(fps)+' '+str(steering_angle)+'\n')
+                if can_go:
+                    car.steer_wheel(steering_angle)
+                    car.move_front(MIN_FRONT_PWM+adjusted_speed) # or  car.move_front(car_speed)
+                else:
+                    car.move_front(MID_PWM)
 
                 lock.release()
             else:
                 time.sleep(0.5)
-        f.close()
 
     def stop(self):
         self.play = False
