@@ -3,6 +3,7 @@ import sys
 import os
 import time
 import datetime
+import argparse
 sys.path.insert(0, os.path.abspath('..'))
 from camera.jetson_tx2_camera import LI_IMX377_MIPI_M12
 from command_processor.logitech_gamepad_f710 import LogitechGamepadF710
@@ -19,8 +20,6 @@ CAR_SPEED_DOWN = 5
 MOVE_CONTROL = 0
 STEERING_CONTROL = 1
 
-SEC_WRITE_INTERVAL = 0.02
-
 
 def convert_axis_value_to_radian(axis_value):
     # (axis value - axis min) * (radian max - radian min) / (axis max - axis min) + radian min
@@ -29,12 +28,13 @@ def convert_axis_value_to_radian(axis_value):
 
 
 class DataWriter(threading.Thread):
-    def __init__(self, data_dir='data'):
+    def __init__(self, data_dir, sec_write_interval):
         threading.Thread.__init__(self)
         self._data_dir = data_dir
         self._play = True
         self._record = False
         self._current_steering_angle = 0
+        self._sec_write_interval = sec_write_interval
 
     @property
     def current_steering_angle(self):
@@ -63,7 +63,7 @@ class DataWriter(threading.Thread):
                 data_file.write(filename + ' %f\n' % self.current_steering_angle)
                 camera.save_frame(self._data_dir, filename, frame)
                 print(filename, str(self.current_steering_angle))
-            time.sleep(SEC_WRITE_INTERVAL)
+            time.sleep(self._sec_write_interval)
         data_file.close()
     
     def stop(self):
@@ -71,9 +71,9 @@ class DataWriter(threading.Thread):
 
 
 class DataCollector:
-    def __init__(self):
+    def __init__(self, data_dir, sec_write_interval):
         self.car = RCCarControl()
-        self.data_writer = DataWriter()
+        self.data_writer = DataWriter(data_dir, sec_write_interval)
         self.max_speed = 10
         self.min_speed = 0
         self.current_speed = 5
@@ -128,8 +128,18 @@ class DataCollector:
 
 
 if __name__ == '__main__':
-    print("Collect data")
-    data_collector = DataCollector()
+    parser = argparse.ArgumentParser(description='Collecting data for steering angle')
+    parser.add_argument('-d', help='data directory', dest='data_dir',      type=str,   default='data')
+    parser.add_argument('-t', help='time interval',  dest='time_interval', type=float, default=0.1)
+    args = parser.parse_args()
+    print('-' * 30)
+    print('Parameters')
+    print('-' * 30)
+    for key, value in vars(args).items():
+        print('{:<20} := {}'.format(key, value))
+    print('-' * 30)
+    
+    data_collector = DataCollector(args.data_dir, args.time_interval)
     data_collector.collect_data()
 
         
