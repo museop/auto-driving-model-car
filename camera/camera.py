@@ -21,7 +21,4 @@ class ICamera:
     def calibrate(self, frame):
         raise NotImplementedError
         
-    @abstractmethod    
-    def save_frame(self, directory, filename, frame):
-        raise NotImplementedError
 
