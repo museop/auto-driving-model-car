@@ -23,7 +23,7 @@ class ILaneKeeping:
         raise NotImplementError
 
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "steering_model-010.h5")
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.h5")
 
 
 class LaneKeeping(ILaneKeeping):
