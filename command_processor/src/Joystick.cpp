@@ -1,12 +1,15 @@
 #include "Joystick.h"
 #include <unistd.h>
+#include <stdlib.h>
 
 Joystick::Joystick(const char* _device)
 {
     this->device = _device;
     js = open(device, O_RDONLY);
-    if (js == -1)
+    if (js == -1) {
         perror("Could not open joystick");
+        exit(0);
+    }
 }
 
 Joystick::~Joystick()

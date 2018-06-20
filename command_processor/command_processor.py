@@ -28,23 +28,23 @@ class CommandProcessor(object):
     def __init__(self):
         super(CommandProcessor, self).__init__()
         print('init CommandProcessor')
+        self.js = LogitechGamepadF710()
         self.adm = AutoDrivingManager()
         self.auto_mode = False
     
     def run(self):
-        js = LogitechGamepadF710()
-        while js.read_event() == 0:
-            event_type = js.get_event_type()
+        while self.js.read_event() == 0:
+            event_type = self.js.get_event_type()
             if event_type == JS_BUTTON_EVENT:
-                btn_number, btn_state = js.get_button_event()
+                btn_number, btn_state = self.js.get_button_event()
                 if btn_number == EXIT_PROGRAM:
                     self.adm.clear()
                     break
                 if btn_state == JS_BUTTON_PRESSED:
                     self.process_button_event(btn_number)
             elif event_type == JS_AXIS_EVENT:
-                axis = js.get_axis_state()
-                x, y = js.get_axis_value(axis)
+                axis = self.js.get_axis_state()
+                x, y = self.js.get_axis_value(axis)
                 self.process_axis_event(axis, x, y)
             if self.auto_mode == True:
                 time.sleep(0.2)
