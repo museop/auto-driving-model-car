@@ -13,6 +13,9 @@
 - Traxxax 1/16 Slash 4X4(Brushed)
 - motor: Titan 12T 550
 
+### Gamepad
+- Logitech Wireless F710
+
 ## Requirement
 - JetPack3.1
     - L4T 28.1
