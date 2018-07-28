@@ -36,7 +36,6 @@
     - `sudo apt-get install python-numpy`
 - OpenCV for TX2
     - http://www.jetsonhacks.com/2017/04/05/build-opencv-nvidia-jetson-tx2/
-- See requirements.txt for other requirements.
 
 ## How to operate an Autonomous driving model car
 The following steps assume that the settings for vehicle control and user input are all completed.
