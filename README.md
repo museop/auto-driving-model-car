@@ -1,4 +1,4 @@
-# SelfDrivingModelCar
+# Auto driving model car
 
 ## Hardware Platform
 
