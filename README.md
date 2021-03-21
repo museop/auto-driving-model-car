@@ -1,7 +1,7 @@
 # Auto driving model car
 
 ## Demonstratino Video
-- [Video](https://www.youtube.com/watch?v=tQ9zU0jDeL8)
+- !youtube[Video](https://www.youtube.com/watch?v=tQ9zU0jDeL8)
 
 ## Hardware Platform
 
